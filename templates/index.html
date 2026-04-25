@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Neural Network - Dehumidification Optimizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>⚛️ Quantum Neural Network</h1>
+                    <p class="subtitle">Advanced Dehumidification Process Optimization</p>
+                </div>
+                <div class="status-badge" id="status-badge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Loading...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Model Info Card -->
+            <section class="card info-card">
+                <h2>🤖 Model Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Model</span>
+                        <span class="value" id="model-name">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Version</span>
+                        <span class="value" id="model-version">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Accuracy</span>
+                        <span class="value" id="model-accuracy">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Status</span>
+                        <span class="value status-active" id="model-status">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prediction Section -->
+            <section class="card prediction-card">
+                <h2>📊 Live Prediction</h2>
+                <div class="prediction-container">
+                    <button class="predict-btn" onclick="getPrediction()">
+                        🔮 Generate Prediction
+                    </button>
+                    <div class="prediction-result" id="prediction-result">
+                        <p style="text-align: center; color: #999;">Click button to generate prediction</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Upload Section -->
+            <section class="card upload-card">
+                <h2>📤 Batch Upload Predictions</h2>
+                <div class="upload-container">
+                    <div class="upload-box" id="upload-box">
+                        <p class="upload-icon">📁</p>
+                        <p class="upload-text">Drag & drop your CSV/TXT file here</p>
+                        <p class="upload-subtext">or click to browse</p>
+                        <input type="file" id="file-input" accept=".csv,.txt" hidden>
+                    </div>
+                    <div id="upload-results" class="upload-results" style="display: none;">
+                        <h3>Upload Results</h3>
+                        <div id="results-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Input Parameters -->
+            <section class="card inputs-card">
+                <h2>📥 Input Parameters</h2>
+                <div class="inputs-grid" id="inputs-grid">
+                    <div class="input-placeholder">Fetching last prediction parameters...</div>
+                </div>
+            </section>
+
+            <!-- Performance Metrics -->
+            <section class="card metrics-card">
+                <h2>📈 Performance Metrics</h2>
+                <div class="metrics-grid" id="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-label">MAE</span>
+                        <span class="metric-value" id="metric-mae">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RMSE</span>
+                        <span class="metric-value" id="metric-rmse">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">R² Score</span>
+                        <span class="metric-value" id="metric-r2">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">MAPE</span>
+                        <span class="metric-value" id="metric-mape">-</span>
+                    </div>
+                </div>
+                <div class="model-details" id="model-details">
+                    <p><strong>Architecture:</strong> <span id="arch-info">-</span></p>
+                    <p><strong>Model Size:</strong> <span id="size-info">-</span></p>
+                </div>
+            </section>
+
+            <!-- Architecture Chart -->
+            <section class="card chart-card">
+                <h2>🏗️ Model Architecture</h2>
+                <canvas id="architectureChart"></canvas>
+            </section>
+
+            <!-- Data Parameters Chart -->
+            <section class="card chart-card">
+                <h2>📊 Input Parameters Distribution</h2>
+                <canvas id="parametersChart"></canvas>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Quantum Neural Network for Predictive Modeling of Dehumidification Processes</p>
+            <p class="timestamp">Last updated: <span id="last-update">-</span></p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
