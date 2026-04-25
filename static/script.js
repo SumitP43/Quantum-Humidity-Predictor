@@ -258,12 +258,13 @@ function setupFileUpload() {
     });
 }
 
-// Handle File Upload
+// Handle Image Upload
 async function handleFileUpload(file) {
     if (!file) return;
     
-    if (!file.name.endsWith('.csv') && !file.name.endsWith('.txt')) {
-        alert('Please upload a CSV or TXT file');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Please upload a JPEG, PNG, GIF, or WebP image');
         return;
     }
     
@@ -309,43 +310,63 @@ function displayUploadResults(data) {
     const resultsDiv = document.getElementById('upload-results');
     const resultsContent = document.getElementById('results-content');
     
+    const imgInfo = data.image_info;
+    const analysis = data.analysis;
+    
     let html = `
+        <div class="image-preview">
+            <img src="${data.preview}" alt="Uploaded image preview">
+        </div>
         <div class="upload-success">
-            <strong>✅ File processed successfully!</strong>
+            <strong>✅ Image analyzed successfully!</strong>
             <br>Filename: ${data.filename}
-            <br>Total predictions: ${data.total_predictions}
+            <br>Format: ${imgInfo.format} | Size: ${imgInfo.width}x${imgInfo.height} px | File: ${imgInfo.file_size_kb} KB
         </div>
         <table class="results-table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Prediction (g/kg)</th>
-                    <th>Confidence</th>
-                    <th>Inlet Temp (°C)</th>
-                    <th>Humidity (g/kg)</th>
+                    <th>Property</th>
+                    <th>Value</th>
                 </tr>
             </thead>
             <tbody>
-    `;
-    
-    data.predictions.forEach((pred, index) => {
-        html += `
-            <tr>
-                <td>${index + 1}</td>
-                <td><strong style="color: #00ff64;">${pred.prediction}</strong></td>
-                <td>${pred.confidence}%</td>
-                <td>${pred.inputs.inlet_temp}</td>
-                <td>${pred.inputs.inlet_humidity}</td>
-            </tr>
-        `;
-    });
-    
-    html += `
+                <tr>
+                    <td><strong>Image Format</strong></td>
+                    <td>${imgInfo.format}</td>
+                </tr>
+                <tr>
+                    <td><strong>Dimensions</strong></td>
+                    <td>${imgInfo.width}x${imgInfo.height} pixels</td>
+                </tr>
+                <tr>
+                    <td><strong>Color Mode</strong></td>
+                    <td>${imgInfo.color_mode}</td>
+                </tr>
+                <tr>
+                    <td><strong>File Size</strong></td>
+                    <td>${imgInfo.file_size_kb} KB</td>
+                </tr>
+                <tr>
+                    <td><strong>Brightness Level</strong></td>
+                    <td>${(imgInfo.brightness * 100).toFixed(1)}%</td>
+                </tr>
+                <tr style="background: rgba(0, 255, 100, 0.15);">
+                    <td><strong>Predicted Humidity</strong></td>
+                    <td><strong style="color: #00ff64; font-size: 1.1em;">${analysis.predicted_humidity} ${analysis.unit}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Analysis Confidence</strong></td>
+                    <td>${analysis.confidence}%</td>
+                </tr>
+                <tr>
+                    <td><strong>Analysis Type</strong></td>
+                    <td>${analysis.analysis_type}</td>
+                </tr>
             </tbody>
         </table>
         <div style="margin-top: 15px; text-align: center;">
             <button class="predict-btn" onclick="resetUpload()" style="background: rgba(100, 200, 255, 0.5);">
-                🔄 Upload Another File
+                🔄 Upload Another Image
             </button>
         </div>
     `;
@@ -362,9 +383,9 @@ function resetUpload() {
     const resultsDiv = document.getElementById('upload-results');
     
     uploadBox.innerHTML = `
-        <p class="upload-icon">📁</p>
-        <p class="upload-text">Drag & drop your CSV/TXT file here</p>
-        <p class="upload-subtext">or click to browse</p>
+        <p class="upload-icon">�️</p>
+        <p class="upload-text">Drag & drop your image here</p>
+        <p class="upload-subtext">or click to browse (JPEG, PNG, GIF, WebP)</p>
     `;
     fileInput.value = '';
     resultsDiv.style.display = 'none';

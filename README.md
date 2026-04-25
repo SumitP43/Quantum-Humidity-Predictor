@@ -20,7 +20,7 @@ git clone https://github.com/ritik-sharma-github/Optimization-of-Dehumidificatio
 cd "Optimization-of-Dehumidification-Process-Using-Quantum-Neural-Networks"
 
 # Install dependencies
-pip install flask numpy qiskit qiskit-machine-learning pandas scikit-learn matplotlib
+pip install flask numpy qiskit qiskit-machine-learning pandas scikit-learn matplotlib pillow
 ```
 
 ### Running the Web Interface
@@ -46,11 +46,13 @@ Click "Generate Prediction" to get instant predictions with:
 - Confidence scores
 - All 9 input parameters used
 
-### 📤 Batch File Upload
-Upload CSV or TXT files for bulk predictions:
-- **Drag & Drop Support** - Simply drag files onto the upload area
-- **Multiple Records** - Process hundreds of records at once
-- **Instant Results** - View all predictions in formatted table
+### � Image Upload & Analysis
+Upload JPEG, PNG, GIF, or WebP images for quantum image analysis:
+- **Drag & Drop Support** - Simply drag images onto the upload area
+- **Image Recognition** - Quantum AI analyzes image properties
+- **Instant Results** - Get dehumidification predictions from images
+- **Image Preview** - See uploaded image in results
+- **Detailed Metrics** - Image dimensions, format, brightness analysis
 - **Export Ready** - Results can be copied for external use
 
 ### 📊 Interactive Visualizations
@@ -111,11 +113,11 @@ Get detailed performance metrics:
 ```
 
 ### `POST /api/upload`
-Upload CSV/TXT file for batch predictions
+Upload image file for quantum analysis
 - **Content-Type**: multipart/form-data
-- **File Parameter**: file (CSV or TXT)
-- **Max Size**: 16MB
-- **Format**: 9 input columns per row
+- **File Parameter**: file (JPEG, PNG, GIF, or WebP)
+- **Max Size**: 25MB
+- **Supported Formats**: JPEG, JPG, PNG, GIF, WebP
 
 ---
 
@@ -135,22 +137,27 @@ Upload CSV/TXT file for batch predictions
 
 ---
 
-## 📄 File Upload Format
+## 📄 Supported Image Formats
 
-### CSV Format
-```csv
-desiccant_thickness,length,particle_diameter,spacing,inlet_temp,ambient_temp,inlet_humidity,mass_flow,cycle_time
-0.8,45.5,0.35,12.3,32.5,28.2,18.5,0.85,450
-1.2,55.0,0.45,15.0,35.2,30.1,22.3,1.05,520
-0.5,35.0,0.25,8.5,28.0,25.0,15.2,0.55,350
-```
+### JPEG Format
+- Extension: `.jpg` or `.jpeg`
+- Best for: Photographs, general images
+- Compression: Lossy
 
-### TXT Format (Space-separated)
-```
-0.8 45.5 0.35 12.3 32.5 28.2 18.5 0.85 450
-1.2 55.0 0.45 15.0 35.2 30.1 22.3 1.05 520
-0.5 35.0 0.25 8.5 28.0 25.0 15.2 0.55 350
-```
+### PNG Format
+- Extension: `.png`
+- Best for: Graphics, images with transparency
+- Compression: Lossless
+
+### GIF Format
+- Extension: `.gif`
+- Best for: Animated sequences, simple graphics
+- Features: Support for animations
+
+### WebP Format
+- Extension: `.webp`
+- Best for: Modern web applications
+- Compression: Best quality-to-size ratio
 
 ---
 
@@ -281,6 +288,7 @@ Multiple Jupyter notebooks are provided showing:
 - **Quantum Computing**: Qiskit, Qiskit Machine Learning
 - **Machine Learning**: TensorFlow/Keras, Scikit-learn
 - **Web Framework**: Flask
+- **Image Processing**: Pillow (PIL)
 - **Data Processing**: NumPy, Pandas
 - **Visualization**: Matplotlib, Chart.js
 

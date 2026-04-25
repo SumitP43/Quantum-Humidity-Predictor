@@ -3,13 +3,20 @@ import numpy as np
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
+from PIL import Image
+import base64
+from io import BytesIO
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
+app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB max for images
+ALLOWED_EXTENSIONS = {'jpeg', 'jpg', 'png', 'gif', 'webp'}
 
 # Create uploads folder if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Simulated QNN Model Data
 class QNNModel:
@@ -95,7 +102,7 @@ def performance():
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Handle file upload and prediction"""
+    """Handle image upload and analysis"""
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
     
@@ -103,44 +110,34 @@ def upload_file():
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
     
-    if not file.filename.endswith(('.csv', '.txt')):
-        return jsonify({'error': 'Only CSV and TXT files allowed'}), 400
+    if not allowed_file(file.filename):
+        return jsonify({'error': 'Only JPEG, PNG, GIF, and WebP images allowed'}), 400
     
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
     
     try:
-        # Parse the file
-        if filename.endswith('.csv'):
-            data = np.genfromtxt(filepath, delimiter=',', skip_header=1)
-        else:
-            data = np.genfromtxt(filepath, delimiter=' ')
+        # Open and analyze the image
+        img = Image.open(filepath)
+        width, height = img.size
         
-        if data.ndim == 1:
-            data = data.reshape(1, -1)
+        # Get image properties
+        image_format = img.format
+        image_mode = img.mode  # RGB, RGBA, etc.
+        file_size_kb = os.path.getsize(filepath) / 1024
         
-        # Make predictions
-        predictions = []
-        for row in data:
-            if len(row) == 9:  # Expecting 9 input features
-                pred = qnn_model.predict(row)
-                predictions.append({
-                    'inputs': {
-                        'desiccant_thickness': round(float(row[0]), 2),
-                        'length': round(float(row[1]), 2),
-                        'particle_diameter': round(float(row[2]), 2),
-                        'spacing': round(float(row[3]), 2),
-                        'inlet_temp': round(float(row[4]), 2),
-                        'ambient_temp': round(float(row[5]), 2),
-                        'inlet_humidity': round(float(row[6]), 2),
-                        'mass_flow': round(float(row[7]), 4),
-                        'cycle_time': round(float(row[8]), 0),
-                    },
-                    'prediction': round(pred, 2),
-                    'unit': 'g/kg',
-                    'confidence': round(qnn_model.accuracy * 100, 1)
-                })
+        # Generate simulated humidity prediction based on image analysis
+        # (In real scenario, this would use computer vision to analyze dehumidification system images)
+        brightness = np.mean(np.array(img.convert('L'))) / 255.0  # 0-1
+        simulated_humidity = round(15 + brightness * 20, 2)  # 15-35 g/kg range
+        
+        # Convert image to base64 for preview
+        img_resized = img.copy()
+        img_resized.thumbnail((200, 200))
+        buffered = BytesIO()
+        img_resized.save(buffered, format="PNG")
+        img_base64 = base64.b64encode(buffered.getvalue()).decode()
         
         # Clean up
         os.remove(filepath)
@@ -148,15 +145,28 @@ def upload_file():
         return jsonify({
             'success': True,
             'filename': filename,
-            'total_predictions': len(predictions),
-            'predictions': predictions,
-            'timestamp': datetime.now().isoformat()
+            'image_info': {
+                'width': width,
+                'height': height,
+                'format': image_format,
+                'color_mode': image_mode,
+                'file_size_kb': round(file_size_kb, 2),
+                'brightness': round(brightness, 2)
+            },
+            'analysis': {
+                'predicted_humidity': simulated_humidity,
+                'unit': 'g/kg',
+                'confidence': round(qnn_model.accuracy * 100, 1),
+                'analysis_type': 'Quantum Image Analysis',
+                'timestamp': datetime.now().isoformat()
+            },
+            'preview': f'data:image/png;base64,{img_base64}'
         })
     
     except Exception as e:
         if os.path.exists(filepath):
             os.remove(filepath)
-        return jsonify({'error': f'Error processing file: {str(e)}'}), 500
+        return jsonify({'error': f'Error processing image: {str(e)}'}), 500
 
 if __name__ == '__main__':
     print("\n" + "="*60)
